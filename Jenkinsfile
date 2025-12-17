@@ -1,0 +1,94 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME   = "myrepo/myapp"
+        IMAGE_TAG    = "${BUILD_NUMBER}"
+        DEPLOY_REPO  = "https://github.com/Amogh052003/deploy-repo.git"
+        DEPLOY_BRANCH = "main"
+    }
+
+    stages {
+
+        stage("Checkout App Code") {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage("SonarQube Analysis") {
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+                    withSonarQubeEnv('sonarqube-server') {
+                        sh """
+                          ${scannerHome}/bin/sonar-scanner \
+                          -Dsonar.projectKey=my-app \
+                          -Dsonar.sources=. \
+                          -Dsonar.language=py
+                        """
+                    }
+                }
+            }
+        }
+
+        stage("Build Docker Image") {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+            }
+        }
+
+        stage("Trivy Scan") {
+            steps {
+                sh "trivy image --exit-code 0 ${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+
+        stage("Push Docker Image") {
+            steps {
+                withDockerRegistry(
+                    credentialsId: 'dockerhub-credentials',
+                    url: 'https://index.docker.io/v1/'
+                ) {
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage("Update Deploy Repo (GitOps)") {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'git-cred',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_TOKEN'
+                    )
+                ]) {
+                    sh """
+                      rm -rf deploy-repo
+                      git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/Amogh052003/deploy-repo.git
+                      cd deploy-repo
+
+                      sed -i 's|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' environments/dev/image.yaml
+
+                      git add environments/dev/image.yaml
+                      git commit -m "Deploy dev image ${IMAGE_TAG}"
+                      git push origin ${DEPLOY_BRANCH}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "======== Pipeline Finished ========"
+        }
+        success {
+            echo "======== Pipeline Executed Successfully ========"
+        }
+        failure {
+            echo "======== Pipeline Failed ========"
+        }
+    }
+}
