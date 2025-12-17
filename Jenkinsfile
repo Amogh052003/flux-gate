@@ -6,8 +6,9 @@ pipeline {
         IMAGE_TAG    = "${BUILD_NUMBER}"
         DEPLOY_REPO  = "https://github.com/Amogh052003/deploy-repo.git"
         DEPLOY_BRANCH = "main"
+        scannerHome = tool 'sonar-scanner'
     }
-
+    
     stages {
 
         stage("Checkout App Code") {
