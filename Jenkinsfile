@@ -67,14 +67,18 @@ pipeline {
                 ]) {
                     sh """
                       rm -rf deploy-repo
-                      git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/Amogh052003/deploy-repo.git
+                      git clone https://github.com/Amogh052003/deploy-repo.git
                       cd deploy-repo
-
+        
+                      git config user.email "jenkins@fluxgate.io"
+                      git config user.name "jenkins-bot"
+        
                       sed -i 's|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' environments/dev/image.yaml
-
+        
                       git add environments/dev/image.yaml
-                      git commit -m "Deploy dev image ${IMAGE_TAG}"
-                      git push origin ${DEPLOY_BRANCH}
+                      git commit -m "chore(dev): deploy image ${IMAGE_TAG}"
+        
+                      git push https://${GIT_USER}:${GIT_TOKEN}@github.com/Amogh052003/deploy-repo.git ${DEPLOY_BRANCH}
                     """
                 }
             }
