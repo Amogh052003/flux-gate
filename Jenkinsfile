@@ -68,7 +68,7 @@ pipeline {
                     sh """
                       rm -rf deploy-repo
                       git clone https://github.com/Amogh052003/FluxGate.git
-                      cd deploy-repo
+                      cd FluxGate/deploy-repo
         
                       git config user.email "jenkins@fluxgate.io"
                       git config user.name "jenkins-bot"
