@@ -67,7 +67,7 @@ pipeline {
                 ]) {
                     sh """
                       rm -rf deploy-repo
-                      git clone https://github.com/Amogh052003/deploy-repo.git
+                      git clone https://github.com/Amogh052003/FluxGate.git
                       cd deploy-repo
         
                       git config user.email "jenkins@fluxgate.io"
@@ -78,7 +78,7 @@ pipeline {
                       git add environments/dev/image.yaml
                       git commit -m "chore(dev): deploy image ${IMAGE_TAG}"
         
-                      git push https://${GIT_USER}:${GIT_TOKEN}@github.com/Amogh052003/deploy-repo.git ${DEPLOY_BRANCH}
+                      git push https://${GIT_USER}:${GIT_TOKEN}@github.com/Amogh052003/FluxGate.git ${DEPLOY_BRANCH}
                     """
                 }
             }
