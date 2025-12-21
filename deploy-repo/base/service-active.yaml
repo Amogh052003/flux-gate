@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-active
+  labels:
+    app: my-app
+spec:
+  selector:
+    app: my-app
+    color: blue   # default, overridden by env
+  ports:
+    - port: 80
+      targetPort: 8080

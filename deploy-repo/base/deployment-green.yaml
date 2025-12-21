@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-green
+  labels:
+    app: my-app
+    color: green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+      color: green
+  template:
+    metadata:
+      labels:
+        app: my-app
+        color: green
+    spec:
+      containers:
+        - name: my-app
+          image: myrepo/myapp:latest   # overridden by env/image.yaml
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-green
+  labels:
+    app: my-app
+    color: green
+spec:
+  selector:
+    app: my-app
+    color: green
+  ports:
+    - port: 80
+      targetPort: 8080
