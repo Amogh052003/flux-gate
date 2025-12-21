@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FluxGate Control Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header class="header">
+    <h1>FluxGate Control Hub</h1>
+    <p>GitOps-powered blue/green deployment control plane with real-time observability</p>
+  </header>
+
+  <!-- ENVIRONMENT -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Environment</h2>
+      <div class="actions">
+        <button class="btn blue" onclick="switchTraffic('blue')">Route to Blue</button>
+        <button class="btn green" onclick="switchTraffic('green')">Route to Green</button>
+        <button class="btn danger">Rollback</button>
+      </div>
+    </div>
+    <p><strong>ENV:</strong> DEV</p>
+    <span id="activeColor" class="badge green">Active: GREEN</span>
+    <p class="muted">Changes are committed to Git. Argo CD reconciles asynchronously.</p>
+  </section>
+
+  <!-- GITOPS HEALTH -->
+  <section class="card">
+    <h2>GitOps Health</h2>
+    <div class="badges">
+      <span class="badge">Sync: Synced</span>
+      <span class="badge warning">Health: Progressing</span>
+    </div>
+  </section>
+
+  <!-- METRICS -->
+  <section class="grid">
+    <div class="card">
+      <h3 class="blue-text">Blue Deployment</h3>
+      <canvas id="blueChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3 class="green-text">Green Deployment</h3>
+      <canvas id="greenChart"></canvas>
+    </div>
+  </section>
+
+  <!-- TRAFFIC GRAPH -->
+  <section class="card">
+    <h2>Traffic Distribution</h2>
+    <canvas id="trafficChart"></canvas>
+  </section>
+
+  <!-- LOGS -->
+  <section class="card">
+    <h2>Deployment Logs</h2>
+    <pre id="logs">
+[12:33:59] Metrics fetched – BLUE CPU 0.02%
+[12:33:45] Metrics fetched – GREEN CPU 0.02%
+[12:33:40] Traffic switch requested → GREEN
+    </pre>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
