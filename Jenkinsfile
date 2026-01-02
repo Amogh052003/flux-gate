@@ -30,9 +30,6 @@ pipeline {
             }
         }
 
-        /* =========================
-           Build Docker image
-           ========================= */
         stage("Build Docker Image") {
             steps {
                 sh """
